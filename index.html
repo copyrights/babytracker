@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="css/jquery.mobile.min.css" />        
+<script src="js/jquery.min.js"></script>
+<script src="js/jquery.mobile.min.js"></script>
+<script>
+var timers = {
+    "linkebrust":$.now(),
+    "rechtebrust":$.now(),
+    "pipi":$.now(),
+    "kacka":$.now(),
+};
+function getlast(action){
+    $.getJSON('db/getlast/'+action, function(data){
+            timers[data['action']]=data['timestamp'];
+            });
+}
+$(document).ready(function(){
+        $("button").click(function(){
+            var action=$(this).attr('id');
+            $.getJSON('db/add/'+action, function(data){
+                timers[data['action']]=data['timestamp'];
+                });
+            });
+        $(function(){
+            updateLast();
+            function updateLast(){
+            setTimeout(updateLast,10000);
+            $.each(timers, function(key,value){
+                getlast(key);
+                });
+            }
+            });
+        $('img').click(function(){
+            $(this).attr("src",$(this).attr("src").replace(/\?.*$/g,"")+"?"+new Date().getTime());
+            //alert($(this).attr("src").replace(/\?.*$/g,"")+"?"+new Date().getTime());
+            });
+        $(function(){
+            updateTimer();
+            function updateTimer(){
+            setTimeout(updateTimer,1000);
+            $.map(timers, function(value,key){
+                $("#timer_"+key).text(function(){
+                    var t = Math.round(($.now()-value)/1000);
+                    var s = t % 60;
+                    s = s<10?'0'+s:s;
+                    t = Math.floor(t/60);
+                    var m = t % 60;
+                    m=m<10?'0'+m:m;
+                    t = Math.floor(t/60);
+                    return t + ":" + m +":"+s;
+
+                    });
+                });
+            }
+            });
+        $(function() {
+                // Set the variable $width to the width of our wrapper on page load
+                $width = $('#content').width();
+                // Target all images inside the #content. This works best if you want to ignore certain images that are part of the layout design
+                $('#content img').css({
+                    // Using jQuery CSS we write the $width variable we previously specified as a pixel value. We use max-width incase the image is smaller than our viewport it won't scale it larger. Don't forget to set height to auto or else it will squish your photos.
+                    'max-width' : $width , 'height' : 'auto'
+                    }); 
+                }); 
+});
+</script>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+<div id="content">
+    <h3 class="ui-bar ui-bar-a ui-corner-all">linke Brust</h3>
+    <div class="ui-body ui-body-a ui-corner-all">
+        <form>
+
+            <span class="timer" id="timer_linkebrust"></span><br/>
+            <button type="button" id="linkebrust" class="ui-btn ui-corner-all">Angelegt</button>
+
+        </form>
+    </div>
+    <br/>
+    <h3 class="ui-bar ui-bar-a ui-corner-all">rechte Brust</h3>
+    <div class="ui-body ui-body-a ui-corner-all">
+        <form>
+
+            <span class="timer" id="timer_rechtebrust"></span><br/>
+            <button type="button" id="rechtebrust" class="ui-btn ui-corner-all">Angelegt</button>
+
+        </form>
+    </div>
+    <br/>
+    <h3 class="ui-bar ui-bar-a ui-corner-all">Pipi</h3>
+    <div class="ui-body ui-body-a ui-corner-all">
+        <form>
+
+            <span class="timer" id="timer_pipi"></span><br/>
+            <button type="button" id="pipi" class="ui-btn ui-corner-all">Gefunden</button>
+
+        </form>
+    </div>
+    <br/>
+    <h3 class="ui-bar ui-bar-a ui-corner-all">Kacka</h3>
+    <div class="ui-body ui-body-a ui-corner-all">
+        <form>
+
+            <span class="timer" id="timer_kacka"></span><br/>
+            <button type="button" id="kacka" class="ui-btn ui-corner-all">Gefunden</button>
+
+        </form>
+    </div>
+    <br/>
+
+    <h3 class="ui-bar ui-bar-a ui-corner-all">24 Stunden &Uuml;bersicht</h3>
+    <div class="ui-body ui-body-a ui-corner-all">
+        <img src="graph_24.png" max-width:100%/><br/>
+    </div>
+    <h3 class="ui-bar ui-bar-a ui-corner-all">Gesamt&uuml;bersicht</h3>
+    <div class="ui-body ui-body-a ui-corner-all">
+        <img src="graph_all.png" max-width:100%/><br/>
+    </div>
+</div>
+</body>
+</html>
